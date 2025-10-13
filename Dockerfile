@@ -5,7 +5,7 @@ RUN dpkg --add-architecture i386 && \
     apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
-        autoconf build-essential curl git make unzip wget \
+        autoconf build-essential curl git ca-certificates make unzip wget \
         binutils cmake zlib1g-dev \
         libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev \
         libglu1-mesa-dev libvlc-dev && \
