@@ -1,33 +1,29 @@
-FROM ubuntu:23.04
+FROM ubuntu:22.04
 
-# Update the package lists
-RUN dpkg --add-architecture i386 && apt-get update && apt-get upgrade -y
+# Install required tools and dependencies
+RUN dpkg --add-architecture i386 && \
+    apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends \
+        autoconf build-essential curl git make unzip wget \
+        binutils cmake zlib1g-dev \
+        libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev \
+        libglu1-mesa-dev libvlc-dev && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install the necessary tools
-RUN apt-get install -y autoconf build-essential curl git make unzip wget
-
-RUN apt-get install -y binutils git cmake build-essential zlib1g-dev libsdl2-dev libglu1-mesa-dev libsdl2-image-dev libvlc-dev libsdl2-mixer-dev
-
-RUN git clone https://github.com/SplinterGU/BennuGD2.git /BennuGD2
-
-WORKDIR /BennuGD2
-
-RUN git submodule update --init --recursive
-
-WORKDIR /BennuGD2/vendor
-
-RUN ./sdl-gpu-patch-001.sh
-
-RUN ./sdl-gpu-patch-002.sh
-
-RUN ./build-sdl-gpu.sh linux clean
+# Clone BennuGD2 source
+RUN git clone --recursive https://github.com/SplinterGU/BennuGD2.git /BennuGD2
 
 WORKDIR /BennuGD2
 
+# Build SDL GPU
+RUN ./vendor/build-sdl-gpu.sh linux clean
+
+# Build BennuGD2
 RUN ./build.sh linux clean
 
+# Default shell
 ENTRYPOINT ["bash"]
-
 CMD ["-i"]
 
 # Build: docker build -t bennugd2 .
